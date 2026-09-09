@@ -1,0 +1,1 @@
+V8: adiciona Risco de Ruína somente na composição geral do método. A estimativa usa Monte Carlo com 10.000 simulações, 100 entradas futuras e banca inicial em unidades definida pelo usuário. Não é exibida por campeonato.
