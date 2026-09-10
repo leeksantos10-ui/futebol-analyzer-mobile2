@@ -1,0 +1,226 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Futebol Analyzer V5</title>
+<style>
+:root{--bg:#061321;--panel:#0a1b2d;--panel2:#0e243a;--line:#1c405d;--text:#eef6ff;--muted:#8fa9bd;--cyan:#09bdf5;--cyan2:#078ee8;--green:#18d56a;--red:#ff4f59;--gold:#f7c948}
+*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:linear-gradient(135deg,#04101c,#0a1929 55%,#07111d);color:var(--text)}
+.wrap{max-width:1500px;margin:auto;padding:16px}.top{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:10px 6px 18px}.brand{display:flex;align-items:center;gap:12px}.logo{width:48px;height:48px;border:2px solid var(--cyan);border-radius:50%;display:grid;place-items:center;font-weight:900;color:var(--cyan);font-size:17px;box-shadow:0 0 20px #078ee833}.brand h1{margin:0;color:#16c7fa;font-size:23px}.brand span{font-size:12px;color:var(--muted)}.nav{display:flex;gap:8px;flex-wrap:wrap}.nav button,.tab{background:#0b2136;color:#d9ecfb;border:1px solid var(--line);border-radius:9px;padding:10px 14px}.nav button.active,.tab.active{background:#087fd4;border-color:#13bdf7;color:white}
+.layout{display:grid;grid-template-columns:315px 1fr;gap:14px}.card{background:linear-gradient(145deg,#0a1b2d,#091827);border:1px solid var(--line);border-radius:12px;padding:14px;box-shadow:0 8px 30px #0003}.sidebar{position:sticky;top:10px;height:max-content}.section{margin-bottom:14px}.section h3{margin:0 0 9px;font-size:14px}.tabs{display:flex;gap:6px}.tabs .tab{flex:1}.field{margin:9px 0}.field label{display:block;color:#b9d0e0;font-size:12px;margin-bottom:5px}select,input,button{font:inherit}select,input{width:100%;background:#071a2c;color:#eaf5ff;border:1px solid #31516b;border-radius:7px;padding:9px;outline:none}select:focus,input:focus{border-color:var(--cyan)}button{cursor:pointer}.primary{width:100%;background:linear-gradient(90deg,#058be7,#04bdf4);color:#fff;border:0;border-radius:9px;padding:11px;font-weight:bold}.outline{width:100%;background:transparent;color:#bfeaff;border:1px solid var(--cyan);border-radius:9px;padding:10px}.smallrow{display:flex;gap:6px}.smallrow button{flex:1;padding:7px;background:#0d2941;color:#bfeaff;border:1px solid var(--line);border-radius:7px}.champbox{max-height:210px;overflow:auto;border:1px solid #31516b;border-radius:7px;padding:7px;background:#061726}.check{display:flex;align-items:center;gap:7px;padding:5px 2px;font-size:12px;color:#d5e6f2}.check input{width:auto}.filters{max-height:500px;overflow:auto;padding-right:3px}.rule{display:grid;grid-template-columns:1.4fr .55fr .7fr 1.4fr auto;gap:6px;margin:7px 0}.rule input{min-width:0}.rule button{background:#11283b;color:#a9c2d4;border:1px solid var(--line);border-radius:7px;padding:0 9px}.strategyHead{display:flex;justify-content:space-between;align-items:center;gap:8px}.strategyName{font-size:15px;font-weight:bold}.remove{background:none;border:0;color:#ff7980}.kpis{display:grid;grid-template-columns:repeat(7,minmax(110px,1fr));gap:9px}.kpi{background:#0a2034;border:1px solid var(--line);border-radius:10px;padding:12px}.kpi .label{font-size:11px;color:#8fa9bd}.kpi .value{font-size:20px;font-weight:bold;margin-top:5px}.g{color:var(--green)}.r{color:var(--red)}.gold{color:var(--gold)}
+.grid2{display:grid;grid-template-columns:1.55fr 1fr;gap:12px;margin-top:12px}.cardtitle{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}.cardtitle h2{font-size:16px;margin:0}.canvasbox{height:280px}.canvasbox canvas{width:100%;height:100%}.tablewrap{overflow:auto;max-height:470px;border:1px solid var(--line);border-radius:8px}table{width:100%;border-collapse:collapse;font-size:12px}th,td{padding:8px;border-bottom:1px solid #16354e;text-align:right;white-space:nowrap}th:first-child,td:first-child{text-align:left}th{position:sticky;top:0;background:#0d253b;color:#b9d0e0}.tag{display:inline-block;border-radius:5px;padding:3px 8px;font-weight:bold;font-size:11px}.tag.g{background:#0d6b3a;color:#7effb3}.tag.r{background:#722b31;color:#ff9a9f}.empty{padding:28px;text-align:center;color:var(--muted)}.strategyBox{margin-bottom:10px;border:1px solid var(--line);border-radius:10px;padding:11px;background:#081a2b}.hint{font-size:11px;color:var(--muted);margin:7px 0}.monthly{max-height:280px}.status{font-size:12px;color:#8fa9bd;margin-top:7px}.compareOnly{display:none}
+@media(max-width:1100px){.layout{grid-template-columns:1fr}.sidebar{position:static}.kpis{grid-template-columns:repeat(4,1fr)}.grid2{grid-template-columns:1fr}}
+@media(max-width:650px){.wrap{padding:9px}.top{align-items:flex-start}.nav{display:none}.kpis{grid-template-columns:repeat(2,1fr)}.rule{grid-template-columns:1fr 80px 1fr}.rule .rhs{grid-column:1/4}.rule button{grid-column:3}.grid2{grid-template-columns:1fr}.brand h1{font-size:19px}}
+
+.riskcard{margin-top:12px}.riskgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}.riskgrid>div{padding:10px;border:1px solid #263653;border-radius:9px;background:#101a2b}.riskgrid span{display:block;font-size:11px;color:#8fa0bb}.riskgrid strong{display:block;margin-top:4px;font-size:18px}.hint{font-size:10px;color:#8fa0bb;margin-top:5px}@media(max-width:800px){.riskgrid{grid-template-columns:repeat(2,1fr)}}
+.dbTotalCard{margin:0 0 12px;padding:14px 16px;background:linear-gradient(135deg,#0d2b45,#0a1b2d);border:1px solid #178dcc;border-radius:12px;text-align:center;box-shadow:0 0 18px #078ee822}.dbTotalCard span{display:block;color:#bfeaff;font-size:13px}.dbTotalCard strong{display:block;font-size:30px;color:#16c7fa;margin:3px 0}.dbTotalCard small{color:#8fa9bd;font-size:11px}.importing{color:#ffd166;font-size:13px;font-weight:600}.importDone{color:#18d56a;font-size:13px;font-weight:600}.importError{color:#ff6b73;font-size:13px;font-weight:600}</style>
+
+<style id="mobile-responsive">
+@media (max-width: 800px){
+  body{font-size:14px}
+  .wrap{padding:8px}
+  .top{padding:6px 2px 10px;align-items:flex-start}
+  .brand h1{font-size:19px}
+  .brand span{font-size:10px}
+  .logo{width:40px;height:40px;font-size:14px}
+  .nav{display:none}
+  .layout{display:block}
+  .sidebar{position:static}
+  .card{padding:11px;border-radius:10px}
+  .section{margin-bottom:10px}
+  .filters{max-height:none}
+  .rule{grid-template-columns:1fr 70px 85px 1fr auto;overflow-x:auto}
+  .rule>*{min-width:0}
+  .smallrow button{padding:8px 5px}
+  .champbox{max-height:180px}
+  .tablewrap,.tablewrap table{width:max-content}
+  .tablewrap{max-width:100%;overflow-x:auto}
+  table{font-size:11px}
+  th,td{padding:6px 7px}
+  .kpis{grid-template-columns:repeat(2,minmax(0,1fr)) !important}
+  canvas{max-width:100%}
+}
+@media (max-width: 480px){
+  .rule{grid-template-columns:130px 58px 75px 130px 34px}
+  .kpis{grid-template-columns:1fr 1fr !important}
+  .primary,.outline{padding:12px}
+}
+
+.profilebar{display:flex;gap:7px;flex-wrap:wrap;margin-top:10px}.profilebar>*{flex:1;min-width:120px}.profilebar button{background:#0d2941;color:#bfeaff;border:1px solid var(--line);border-radius:7px;padding:8px}.quicknav{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:12px}.quicknav button{background:#0b2136;color:#d9ecfb;border:1px solid var(--line);border-radius:8px;padding:9px 12px}.quicknav button.active{background:#087fd4;border-color:#13bdf7;color:#fff}.subpanel{display:none}.subpanel.active{display:block}.formgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.formgrid .wide{grid-column:span 2}.formgrid .full{grid-column:1/-1}.formgrid label{font-size:11px;color:#b9d0e0;display:block;margin-bottom:4px}.reportTable{max-height:360px}.success{color:var(--green);font-size:12px}.danger{color:var(--red);font-size:12px}.importbox{display:grid;gap:10px}.checkline{font-size:12px;color:#c7dbea;display:flex;gap:8px;align-items:center}.importbox input[type=file]{width:100%;padding:10px;background:#081a2b;color:#d9ecfb;border:1px dashed var(--line);border-radius:8px}.importbox .smallrow{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+@media(max-width:650px){.formgrid{grid-template-columns:1fr 1fr}.formgrid .wide{grid-column:1/-1}.formgrid .full{grid-column:1/-1}.profilebar{display:grid;grid-template-columns:1fr 1fr}.profilebar select{grid-column:1/-1}.profilebar button{min-width:0}.quicknav{overflow-x:auto;flex-wrap:nowrap}.quicknav button{white-space:nowrap}}
+</style>
+</head>
+<body><div class="wrap">
+<header class="top"><div class="brand"><div class="logo">FB</div><div><h1>Futebol Analyzer</h1><span>Backtesting de Estratégias • V6 Mobile</span></div></div><div class="nav"><button class="active">▥ Backtesting</button><button>♙ Estratégias</button><button>⚽ Jogos</button><button>🏆 Campeonatos</button><button>▤ Banco de Dados</button></div></header>
+
+
+<div class="quicknav">
+ <button class="active" data-panel="analysisPanel">📊 Analisar</button>
+ <button data-panel="profilePanel">👤 Perfis</button>
+ <button data-panel="importPanel">📥 Importar dados</button>
+ <button data-panel="leaguePanel">🏆 Lucro por liga</button>
+</div>
+<div id="profilePanel" class="card subpanel">
+ <div class="cardtitle"><h2>👤 Perfis de estratégia</h2><span class="status">Salva filtros, mercado, stake e campeonatos neste navegador</span></div>
+ <div class="profilebar"><select id="profileSelect"><option value="">Selecionar perfil...</option></select><input id="profileName" placeholder="Nome do novo perfil"><button id="saveProfile" type="button">💾 Salvar</button><button id="loadProfile" type="button">↻ Carregar</button><button id="deleteProfile" type="button">🗑 Excluir</button></div>
+ <div id="profileStatus" class="status"></div>
+</div>
+<div id="importPanel" class="card subpanel">
+ <div class="cardtitle"><h2>📥 Importar dados</h2><span class="status">Excel (.xlsx) ou CSV</span></div>
+ <div class="importbox">
+  <p class="status">Selecione sua planilha no celular ou PC. O sistema confere as colunas, mostra uma prévia e só depois grava no banco.</p>
+  <input id="importFile" type="file" accept=".xlsx,.csv,text/csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet">
+  <label class="checkline"><input id="updateExisting" type="checkbox"> Atualizar jogos que já existem (mesma Data + Hora + Confronto + Campeonato)</label>
+  <div class="smallrow"><button class="outline" id="previewImport" type="button">👀 Ver prévia</button><button class="primary" id="confirmImport" type="button" disabled>📥 Importar para o banco</button></div>
+  <div id="importStatus" class="status"></div>
+  <div id="importPreview" class="tablewrap reportTable"></div>
+ </div>
+</div>
+<div class="dbTotalCard"><span>🗄️ Jogos no banco de dados</span><strong id="totalJogos">Carregando...</strong><small>total de registros disponíveis</small></div>
+<div id="leaguePanel" class="card subpanel">
+ <div class="cardtitle"><h2>🏆 Lucro por liga</h2><span class="status">Calculado sobre a análise atual</span></div>
+ <div class="tablewrap reportTable" id="leagueReport"><div class="empty">Execute uma análise para gerar o relatório.</div></div>
+</div>
+<div id="analysisPanel">
+<div class="layout">
+<aside class="sidebar">
+<div class="card">
+<div class="tabs"><button id="oneTab" class="tab active" type="button">Analisar</button><button id="cmpTab" class="tab" type="button">Comparar</button></div>
+<div class="section"><h3>Mercado</h3><select id="market"></select></div>
+<div class="section"><h3>Stake por entrada</h3><input id="stake" type="number" value="1" step=".01" min=".01"></div><div class="section"><h3>Banca para Risco de Ruína</h3><input id="bankroll" type="number" value="100" step="1" min="1"><div class="hint">Banca em unidades. A simulação usa os resultados históricos da estratégia.</div></div>
+<div class="section"><h3>Campeonatos da estratégia</h3>
+<div class="smallrow"><button id="allCh" type="button">Todos</button><button id="noCh" type="button">Limpar</button></div>
+<div id="champs" class="champbox" style="margin-top:7px"></div></div>
+<div class="section"><button class="primary" id="run" type="button">▶ Executar análise</button></div>
+<div class="section"><button class="outline" id="addStrategy" type="button">＋ Nova estratégia</button></div>
+<div class="status" id="dbStatus">Carregando banco...</div>
+</div></aside>
+
+<main>
+<div class="card">
+<div class="cardtitle"><h2>Filtros da estratégia</h2><span class="status">Forças novas oficiais • 1X/2X com L&amp;P</span></div>
+<div id="strategies"></div>
+</div>
+
+<div class="card" style="margin-top:12px">
+<div class="cardtitle"><h2>Resumo da estratégia</h2><span id="resultTitle" class="status">Aguardando análise</span></div>
+<div id="kpis" class="kpis"></div>
+</div>
+
+<div class="grid2">
+<div class="card"><div class="cardtitle"><h2>📈 Evolução da banca</h2><span class="status">unidades</span></div><div class="canvasbox"><canvas id="curve"></canvas></div></div>
+<div class="card"><div class="cardtitle"><h2>📅 Resultado mensal</h2></div><div class="tablewrap monthly" id="monthly"></div></div>
+</div>
+
+<div class="card" style="margin-top:12px"><div class="cardtitle"><h2>⚽ Jogos que bateram nos filtros</h2><span id="matchCount" class="status"></span></div><div class="tablewrap" id="matches"></div></div>
+</main></div></div>
+</div>
+
+<script>
+let meta=null,mode='one',strategyCount=0,lastResults=null;
+const $=id=>document.getElementById(id);
+function esc(s){return String(s??'').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;')}
+function metricOpts(){return meta.metrics.map(m=>`<option>${esc(m)}</option>`).join('')}
+function addRule(box){
+ const d=document.createElement('div');d.className='rule';
+ d.innerHTML=`<select class="metric">${metricOpts()}</select><select class="op"><option>></option><option>>=</option><option><</option><option><=</option><option>=</option></select><select class="mode"><option value="value">Valor</option><option value="metric">Métrica</option></select><input class="val" type="number" step=".01" placeholder="valor"><select class="rhs" style="display:none">${metricOpts()}</select><button type="button">×</button>`;
+ d.querySelector('.mode').onchange=e=>{d.querySelector('.val').style.display=e.target.value==='value'?'block':'none';d.querySelector('.rhs').style.display=e.target.value==='metric'?'block':'none'};
+ d.querySelector('button').onclick=()=>d.remove();box.appendChild(d);
+}
+function champHTML(){return meta.championships.map(c=>`<label class="check"><input type="checkbox" class="champ" value="${esc(c)}"> <span>${esc(c)}</span></label>`).join('')}
+function newStrategy(){
+ strategyCount++;const box=document.createElement('div');box.className='strategyBox';box.dataset.id=strategyCount;
+ box.innerHTML=`<div class="strategyHead"><div><span class="strategyName">Estratégia ${strategyCount}</span><input class="sname" value="Estratégia ${strategyCount}" style="display:none"></div><button class="remove" type="button">Excluir</button></div><div class="hint">Ex.: Média Gols Feitos Casa &gt; Média Gols Feitos Visitante</div><div class="rules"></div><div class="smallrow"><button class="addRule" type="button">＋ Métrica</button></div>`;
+ box.querySelector('.addRule').onclick=()=>addRule(box.querySelector('.rules'));
+ box.querySelector('.remove').onclick=()=>{box.remove();if(!document.querySelector('.strategyBox'))newStrategy()};
+ box.querySelector('.strategyName').ondblclick=e=>{e.target.style.display='none';box.querySelector('.sname').style.display='block';box.querySelector('.sname').focus()};
+ $('strategies').appendChild(box);addRule(box.querySelector('.rules'));
+}
+function selectChamps(flag){document.querySelectorAll('.champ').forEach(c=>c.checked=flag)}
+function setMode(m){mode=m;$('oneTab').classList.toggle('active',m==='one');$('cmpTab').classList.toggle('active',m==='compare');$('resultTitle').textContent=m==='one'?'Análise individual':'Comparação de estratégias'}
+function collect(){
+ return [...document.querySelectorAll('.strategyBox')].map((s,i)=>({name:s.querySelector('.sname').value||`Estratégia ${i+1}`,championships:[...s.querySelectorAll('.champ:checked')].map(c=>c.value),rules:[...s.querySelectorAll('.rule')].map(r=>({metric:r.querySelector('.metric').value,op:r.querySelector('.op').value,compare_mode:r.querySelector('.mode').value,value:r.querySelector('.val').value,rhs_metric:r.querySelector('.rhs').value})).filter(x=>x.compare_mode==='metric'||x.value!=='')}))}
+function kpi(label,value,cls=''){return `<div class="kpi"><div class="label">${label}</div><div class="value ${cls}">${value}</div></div>`}
+function draw(points){const c=$('curve'),ctx=c.getContext('2d'),w=c.clientWidth||600,h=c.clientHeight||280,d=window.devicePixelRatio||1;c.width=w*d;c.height=h*d;ctx.scale(d,d);ctx.clearRect(0,0,w,h);if(!points.length){ctx.fillStyle='#8fa9bd';ctx.fillText('Sem dados para a curva temporal.',20,30);return}const vals=points.map(p=>p.banca),mn=Math.min(0,...vals),mx=Math.max(0,...vals)+(Math.max(...vals)===Math.min(...vals)?1:0),pad=35;ctx.strokeStyle='#23445e';ctx.lineWidth=1;for(let i=0;i<5;i++){let y=pad+(h-2*pad)*i/4;ctx.beginPath();ctx.moveTo(pad,y);ctx.lineTo(w-pad,y);ctx.stroke()}ctx.strokeStyle='#09bdf5';ctx.lineWidth=2;ctx.beginPath();points.forEach((p,i)=>{let x=pad+(w-2*pad)*i/Math.max(1,points.length-1),y=h-pad-(p.banca-mn)/(mx-mn)*(h-2*pad);i?ctx.lineTo(x,y):ctx.moveTo(x,y)});ctx.stroke();ctx.fillStyle='#8fa9bd';ctx.font='11px Arial';ctx.fillText(mx.toFixed(1)+'u',5,14);ctx.fillText(mn.toFixed(1)+'u',5,h-5)}
+function render(r){
+ const a=r.all; $('resultTitle').textContent=r.name;
+ $('kpis').innerHTML=kpi('Partidas',a.entries)+kpi('Green',a.greens,'g')+kpi('Red',a.reds,'r')+kpi('Winrate',a.winrate.toFixed(2)+'%')+kpi('Odd média',a.avgodd.toFixed(3),'gold')+kpi('L&P',a.lp.toFixed(2)+'u',a.lp>=0?'g':'r')+kpi('ROI',a.roi.toFixed(2)+'%',a.roi>=0?'g':'r')+kpi('Drawdown',r.maxdd.toFixed(2)+'u','r');
+ draw(r.curve);
+ let mh='<table><tr><th>Mês</th><th>Jogos</th><th>Green</th><th>Red</th><th>Winrate</th><th>L&P</th><th>ROI</th></tr>';
+ for(const m of r.monthly)mh+=`<tr><td>${m.mes}</td><td>${m.jogos}</td><td class="g">${m.green}</td><td class="r">${m.red}</td><td>${m.winrate.toFixed(2)}%</td><td class="${m.lp>=0?'g':'r'}">${m.lp.toFixed(2)}u</td><td class="${m.roi>=0?'g':'r'}">${m.roi.toFixed(2)}%</td></tr>`;
+ $('monthly').innerHTML=mh+'</table>';
+ let lh='<table><tr><th>Campeonato</th><th>Jogos</th><th>Green</th><th>Red</th><th>Winrate</th><th>L&P</th><th>ROI</th></tr>';
+ for(const m of (r.by_league||[]))lh+=`<tr><td>${esc(m.campeonato)}</td><td>${m.jogos}</td><td class="g">${m.green}</td><td class="r">${m.red}</td><td>${m.winrate.toFixed(2)}%</td><td class="${m.lp>=0?'g':'r'}">${m.lp.toFixed(2)}u</td><td class="${m.roi>=0?'g':'r'}">${m.roi.toFixed(2)}%</td></tr>`;
+ $('leagueReport').innerHTML=lh+'</table>';
+ let gh='<table><tr><th>Data</th><th>Hora</th><th>Campeonato</th><th>Confronto</th><th>Placar</th><th>Odd</th><th>Resultado</th></tr>';
+ for(const x of r.matches)gh+=`<tr><td>${esc(x.data)}</td><td>${esc(x.hora)}</td><td>${esc(x.campeonato)}</td><td>${esc(x.confronto)}</td><td>${x.placar}</td><td>${x.odd.toFixed(3)}</td><td><span class="tag ${x.resultado==='GREEN'?'g':'r'}">${x.resultado}</span></td></tr>`;
+ $('matches').innerHTML=gh+'</table>';$('matchCount').textContent=`${r.matches.length} jogos encontrados`;
+}
+async function run(){
+ const list=collect();if(!list.length)return;
+ $('run').textContent='⏳ Calculando...';$('run').disabled=true;
+ try{const q=encodeURIComponent(JSON.stringify(mode==='one'?[list[0]]:list)),st=$('stake').value||1;const x=await fetch(`/api/evaluate?strategies=${q}&market=${encodeURIComponent($('market').value)}&stake=${st}`).then(r=>r.json());if(x.status!=='ok')throw Error(x.msg);if(mode==='one')render({...x.results[0],name:list[0].name});else renderCompare(x.results)}
+ catch(e){$('resultTitle').textContent='Erro: '+e.message}
+ $('run').textContent='▶ Executar análise';$('run').disabled=false;
+}
+function renderCompare(rs){let h='<div class="tablewrap"><table><tr><th>Estratégia</th><th>Jogos</th><th>Green</th><th>Red</th><th>Winrate</th><th>Odd média</th><th>L&P</th><th>ROI</th><th>DD</th></tr>';for(const r of rs){const a=r.all;h+=`<tr><td>${esc(r.name)}</td><td>${a.entries}</td><td class="g">${a.greens}</td><td class="r">${a.reds}</td><td>${a.winrate.toFixed(2)}%</td><td>${a.avgodd.toFixed(3)}</td><td class="${a.lp>=0?'g':'r'}">${a.lp.toFixed(2)}u</td><td class="${a.roi>=0?'g':'r'}">${a.roi.toFixed(2)}%</td><td class="r">${r.maxdd.toFixed(2)}u</td></tr>`}h+='</table></div>'; $('kpis').innerHTML='';$('monthly').innerHTML='<div class="empty">Selecione “Analisar” para ver gráfico e mensal da estratégia individual.</div>';$('leagueReport').innerHTML='<div class="empty">O relatório por liga aparece na análise individual.</div>';$('matches').innerHTML=h;$('matchCount').textContent=`${rs.length} estratégias`; $('resultTitle').textContent='Comparação'}
+
+function riskOfRuin(matches, stake, bankroll, sims=10000, horizon=100){
+  const vals=matches.map(x=>x.green ? stake*(x.odd-1) : -stake).filter(Number.isFinite);
+  if(!vals.length || bankroll<=0) return null;
+  let ruined=0;
+  for(let sim=0;sim<sims;sim++){
+    let b=bankroll;
+    for(let i=0;i<horizon;i++){
+      const v=vals[Math.floor(Math.random()*vals.length)];
+      b+=v;
+      if(b<=0){ruined++;break;}
+    }
+  }
+  return ruined/sims*100;
+}
+function renderRisk(matches, stake){
+  const bank=Number($('bankroll')?.value)||100;
+  const risk=riskOfRuin(matches,stake,bank,10000,100);
+  $('riskBankroll').textContent=bank.toFixed(2)+'u';
+  $('riskValue').textContent=risk===null?'—':risk.toFixed(2)+'%';
+  if(risk===null){$('riskNote').textContent='Dados insuficientes para estimar o risco.';return;}
+  let cls=risk<1?'baixo':risk<5?'moderado':risk<15?'elevado':'alto';
+  $('riskNote').textContent='Estimativa por Monte Carlo com 10.000 simulações e horizonte de 100 entradas; classificação '+cls+'. Não é garantia futura.';
+}
+function snapshot(){return {market:$('market').value,stake:$('stake').value,championships:[...document.querySelectorAll('.champ:checked')].map(c=>c.value),strategies:collect()}}
+function refreshProfiles(){const ps=JSON.parse(localStorage.getItem('fa_profiles')||'{}');$('profileSelect').innerHTML='<option value="">Selecionar perfil...</option>'+Object.keys(ps).sort().map(n=>`<option>${esc(n)}</option>`).join('')}
+function restore(s){$('market').value=s.market||$('market').value;$('stake').value=s.stake||1;document.querySelectorAll('.champ').forEach(c=>c.checked=(s.championships||[]).includes(c.value));$('strategies').innerHTML='';strategyCount=0;(s.strategies||[]).forEach(x=>{newStrategy();const box=document.querySelectorAll('.strategyBox')[strategyCount-1];box.querySelector('.sname').value=x.name||`Estratégia ${strategyCount}`;box.querySelector('.strategyName').textContent=x.name||`Estratégia ${strategyCount}`;const rb=box.querySelector('.rules');rb.innerHTML='';(x.rules||[]).forEach(rule=>{addRule(rb);const r=rb.lastElementChild;r.querySelector('.metric').value=rule.metric;r.querySelector('.op').value=rule.op;r.querySelector('.mode').value=rule.compare_mode||'value';r.querySelector('.val').value=rule.value||'';r.querySelector('.rhs').value=rule.rhs_metric||'';r.querySelector('.mode').dispatchEvent(new Event('change'))})})}
+function saveProfile(){const n=$('profileName').value.trim();if(!n){$('profileStatus').textContent='Digite um nome para o perfil.';return}const ps=JSON.parse(localStorage.getItem('fa_profiles')||'{}');ps[n]=snapshot();localStorage.setItem('fa_profiles',JSON.stringify(ps));refreshProfiles();$('profileSelect').value=n;$('profileStatus').textContent='Perfil salvo: '+n}
+function loadProfile(){const n=$('profileSelect').value,ps=JSON.parse(localStorage.getItem('fa_profiles')||'{}');if(!n||!ps[n])return;$('profileName').value=n;restore(ps[n]);$('profileStatus').textContent='Perfil carregado: '+n}
+function deleteProfile(){const n=$('profileSelect').value;if(!n)return;const ps=JSON.parse(localStorage.getItem('fa_profiles')||'{}');delete ps[n];localStorage.setItem('fa_profiles',JSON.stringify(ps));refreshProfiles();$('profileStatus').textContent='Perfil excluído.'}
+async function addGame(){const data={'Data':$('gData').value,'Hora':$('gHora').value,'Confronto':$('gConfronto').value,'Campeonato':$('gCamp').value,'Gols Casa FT':$('gHC').value,'Gols Visitante FT':$('gAC').value,'Odd Casa':$('gOddH').value,'Odd Empate':$('gOddD').value,'Odd Visitante':$('gOddA').value,'Over 0,5 FT':$('gO05').value,'Over 1,5 FT':$('gO15').value,'Over 2,5 FT':$('gO25').value,'BTTS Sim FT':$('gBTTS').value};$('gameStatus').textContent='Salvando...';const x=await fetch('/api/games',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)}).then(r=>r.json());$('gameStatus').textContent=x.status==='ok'?'Jogo adicionado com sucesso. ID '+x.id:x.msg;if(x.status==='ok'){['gData','gHora','gConfronto','gHC','gAC','gOddH','gOddD','gOddA','gO05','gO15','gO25','gBTTS'].forEach(id=>$(id).value='');meta=await fetch('/api/meta').then(r=>r.json());$('totalJogos').textContent=Number(meta.total||0).toLocaleString('pt-BR');$('dbStatus').textContent=`Banco conectado • ${meta.total.toLocaleString('pt-BR')} jogos`;$('champs').innerHTML=champHTML();$('campList').innerHTML=meta.championships.map(c=>`<option value="${esc(c)}">`).join('')}}
+
+let lastImportReady=false;
+async function previewImport(){
+ const f=$('importFile').files[0]; if(!f){$('importStatus').textContent='Selecione uma planilha primeiro.';return;}
+ $('importStatus').textContent='Lendo planilha...';$('confirmImport').disabled=true;lastImportReady=false;
+ const fd=new FormData();fd.append('file',f);
+ try{const x=await fetch('/api/import/preview',{method:'POST',body:fd}).then(r=>r.json());if(x.status!=='ok')throw Error(x.msg);
+  const wanted=['Data','Hora','Confronto','Campeonato','Gols Casa FT','Gols Visitante FT','Odd Casa','Odd Empate','Odd Visitante','Over 0,5 FT','Over 1,5 FT','Over 2,5 FT','BTTS Sim FT'];
+  const cols=x.headers.filter(c=>wanted.includes(c)).slice(0,13);let t='<table><tr>'+cols.map(c=>'<th>'+esc(c)+'</th>').join('')+'</tr>';
+  for(const r of x.preview)t+='<tr>'+cols.map(c=>'<td>'+esc(r[c]??'')+'</td>').join('')+'</tr>';t+='</table>';$('importPreview').innerHTML=t;
+  $('importStatus').dataset.rows=x.rows.toLocaleString('pt-BR');$('importStatus').textContent=`${x.filename}: ${x.rows.toLocaleString('pt-BR')} linhas. ${x.matched.length} colunas reconhecidas.`;
+  lastImportReady=true;$('confirmImport').disabled=false;
+ }catch(e){$('importStatus').innerHTML='<span class="importError">❌ Erro: '+esc(e.message)+'</span>'}
+}
+async function confirmImport(){
+ if(!lastImportReady){return} const f=$('importFile').files[0];if(!f)return;
+ $('confirmImport').disabled=true;$('previewImport').disabled=true;
+ const totalHint=$('importStatus').dataset.rows||'';
+ let elapsed=0; $('importStatus').innerHTML=`<span class="importing">⏳ <b>Importando...</b>${totalHint?` ${totalHint} linhas`:''} • processando o banco. Não feche esta página.</span>`;
+ const timer=setInterval(()=>{elapsed++;$('importStatus').innerHTML=`<span class="importing">⏳ <b>Importando...</b>${totalHint?` ${totalHint} linhas`:''} • ${elapsed}s decorridos. Aguarde até aparecer <b>Importação concluída</b>.</span>`},1000);
+ const fd=new FormData();fd.append('file',f);const upd=$('updateExisting').checked?'1':'0';
+ try{const x=await fetch('/api/import?update='+upd,{method:'POST',body:fd}).then(r=>r.json());if(x.status!=='ok')throw Error(x.msg);
+  meta=await fetch('/api/meta').then(r=>r.json());$('totalJogos').textContent=Number(meta.total||0).toLocaleString('pt-BR');$('dbStatus').textContent=`Banco conectado • ${meta.total.toLocaleString('pt-BR')} jogos`;$('champs').innerHTML=champHTML();if($('campList'))$('campList').innerHTML=meta.championships.map(c=>`<option value="${esc(c)}">`).join('');
+  $('importStatus').innerHTML=`<span class="importDone">✅ <b>Importação concluída!</b><br>${x.total_processed.toLocaleString('pt-BR')} processados • ${x.inserted} novos • ${x.updated} atualizados • ${x.duplicates} duplicados ignorados • ${x.invalid} inválidos.</span>`;lastImportReady=false;$('importFile').value='';$('importPreview').innerHTML='';
+ }catch(e){$('importStatus').innerHTML='<span class="importError">❌ Erro: '+esc(e.message)+'</span>'}finally{clearInterval(timer);$('confirmImport').disabled=true;$('previewImport').disabled=false}
+}
+async function init(){meta=await fetch('/api/meta').then(r=>r.json());$('totalJogos').textContent=Number(meta.total||0).toLocaleString('pt-BR');$('dbStatus').textContent=`Banco conectado • ${Number(meta.total||0).toLocaleString('pt-BR')} jogos`;$('market').innerHTML=meta.markets.map(x=>`<option>${esc(x)}</option>`).join('');$('champs').innerHTML=champHTML();if($('campList'))$('campList').innerHTML=meta.championships.map(c=>`<option value="${esc(c)}">`).join('');refreshProfiles();newStrategy()}
+document.querySelectorAll('.quicknav button').forEach(b=>b.onclick=()=>{document.querySelectorAll('.quicknav button').forEach(x=>x.classList.remove('active'));b.classList.add('active');document.querySelectorAll('.subpanel').forEach(x=>x.classList.remove('active'));if(b.dataset.panel==='analysisPanel')$('analysisPanel').scrollIntoView({behavior:'smooth'});else $(b.dataset.panel).classList.add('active')});$('saveProfile').onclick=saveProfile;$('loadProfile').onclick=loadProfile;$('deleteProfile').onclick=deleteProfile;$('previewImport').onclick=previewImport;$('confirmImport').onclick=confirmImport;$('allCh').onclick=()=>selectChamps(true);$('noCh').onclick=()=>selectChamps(false);$('addStrategy').onclick=newStrategy;$('run').onclick=run;$('oneTab').onclick=()=>setMode('one');$('cmpTab').onclick=()=>setMode('compare');init();
+</script></body></html>
